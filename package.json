@@ -1,0 +1,23 @@
+{
+  "name": "tinyrpc",
+  "version": "1.0.0",
+  "description": "A small json-based rpc for javascript.",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chalk": "^5.3.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.2"
+  }
+}
