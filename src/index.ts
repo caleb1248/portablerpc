@@ -2,13 +2,13 @@ interface Disposable {
   dispose(): void;
 }
 
-interface TinyRpcMessage {
-  tinyrpc: 'v1';
+interface Message {
+  portablerpc: 'v1';
 }
 
 interface Transports {
-  sendMessage<T extends TinyRpcMessage>(message: T): void;
-  onMessage(handler: (message: TinyRpcMessage) => void): Disposable;
+  sendMessage<T extends Message>(message: T): void;
+  onMessage(handler: (message: Message) => void): Disposable;
 }
 
 /**
@@ -23,7 +23,7 @@ type ValidJson =
   | ValidJson[]
   | { [key: string]: ValidJson };
 
-interface TinyRpcConnection extends Disposable {
+interface Connection extends Disposable {
   sendRequest<T extends ValidJson>(
     method: string,
     params: ValidJson
@@ -43,18 +43,18 @@ interface TinyRpcConnection extends Disposable {
   ): Disposable;
 }
 
-interface TinyRpcRequest extends TinyRpcMessage {
+interface RequestMessage extends Message {
   id: number;
   method: string;
   params: ValidJson;
 }
 
-interface TinyRpcResult extends TinyRpcMessage {
+interface ResponseMessage extends Message {
   id: number;
   result: ValidJson;
 }
 
-interface TinyRpcError extends TinyRpcMessage {
+interface ErrorMessage extends Message {
   id: number;
   error: ValidJson;
 }
@@ -68,10 +68,10 @@ function createRequestQueue(transports: Transports) {
   let disposed = false;
 
   const listener = transports.onMessage((message) => {
-    if (disposed || message.tinyrpc !== 'v1' || !('id' in message)) return;
+    if (disposed || message.portablerpc !== 'v1' || !('id' in message)) return;
 
     if ('error' in message) {
-      const { id, error } = message as TinyRpcError;
+      const { id, error } = message as ErrorMessage;
       const [, reject] = queue.get(id)!;
       reject(error);
       queue.delete(id);
@@ -79,7 +79,7 @@ function createRequestQueue(transports: Transports) {
     }
 
     if ('result' in message) {
-      const { id, result } = message as TinyRpcResult;
+      const { id, result } = message as ResponseMessage;
       const [resolve] = queue.get(id)!;
       resolve(result);
       queue.delete(id);
@@ -99,7 +99,7 @@ function createRequestQueue(transports: Transports) {
         const id = ++currentId;
         queue.set(id, [resolve as any, reject]);
         transports.sendMessage({
-          tinyrpc: 'v1',
+          portablerpc: 'v1',
           id,
           method,
           params,
@@ -115,14 +115,14 @@ function createRequestQueue(transports: Transports) {
   };
 }
 
-function createConnection(transports: Transports): TinyRpcConnection {
+function createConnection(transports: Transports): Connection {
   const requestQueue = createRequestQueue(transports);
   const handlers = new Map<string, Function[]>();
   const disposables: Disposable[] = [];
 
   disposables.push(
-    transports.onMessage((message: TinyRpcRequest) => {
-      if (message.tinyrpc !== 'v1' || !('method' in message)) return;
+    transports.onMessage((message: RequestMessage) => {
+      if (message.portablerpc !== 'v1' || !('method' in message)) return;
       const list = handlers.get(message.method);
       if (!list) return;
 
@@ -135,13 +135,13 @@ function createConnection(transports: Transports): TinyRpcConnection {
           try {
             const result = await list[0](message.params);
             transports.sendMessage({
-              tinyrpc: 'v1',
+              portablerpc: 'v1',
               id: message.id,
               result,
             });
           } catch (error) {
             transports.sendMessage({
-              tinyrpc: 'v1',
+              portablerpc: 'v1',
               id: message.id,
               error,
             });
@@ -177,15 +177,15 @@ function createConnection(transports: Transports): TinyRpcConnection {
 
     sendNotification(method, params) {
       transports.sendMessage({
-        tinyrpc: 'v1',
+        portablerpc: 'v1',
         method,
         params,
       });
     },
 
     onNotification(method, handler) {
-      return transports.onMessage((message: TinyRpcRequest) => {
-        if (message.tinyrpc !== 'v1' || message.method !== method) return;
+      return transports.onMessage((message: RequestMessage) => {
+        if (message.portablerpc !== 'v1' || message.method !== method) return;
         handler(message.params);
       });
     },
@@ -198,17 +198,17 @@ function createConnection(transports: Transports): TinyRpcConnection {
 }
 
 abstract class BaseTransports implements Transports {
-  abstract sendMessage<T extends TinyRpcMessage>(message: T): void;
-  private _handlers: ((message: TinyRpcMessage) => void)[] = [];
+  abstract sendMessage<T extends Message>(message: T): void;
+  private _handlers: ((message: Message) => void)[] = [];
 
   /**
    * Fires a message to all registered handlers. Messages are validated, but non-messages will result in console warns, so *please* validate the messages yourself.
    */
-  protected fireMessage(message: TinyRpcMessage) {
+  protected fireMessage(message: Message) {
     if (
       typeof message !== 'object' ||
       message === null ||
-      message.tinyrpc !== 'v1'
+      message.portablerpc !== 'v1'
     )
       return;
     for (let i = 0; i < this._handlers.length; i++) {
@@ -216,7 +216,7 @@ abstract class BaseTransports implements Transports {
     }
   }
 
-  onMessage(handler: (message: TinyRpcMessage) => void): Disposable {
+  onMessage(handler: (message: Message) => void): Disposable {
     this._handlers.push(handler);
 
     return {
@@ -234,10 +234,10 @@ export { createConnection, BaseTransports };
 export type {
   Disposable,
   ValidJson,
-  TinyRpcMessage,
-  TinyRpcRequest,
-  TinyRpcResult,
-  TinyRpcError,
+  Message as TinyRpcMessage,
+  RequestMessage as TinyRpcRequest,
+  ResponseMessage as TinyRpcResult,
+  ErrorMessage as TinyRpcError,
   Transports,
-  TinyRpcConnection,
+  Connection as TinyRpcConnection,
 };

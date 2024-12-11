@@ -2,7 +2,7 @@ import { build } from 'esbuild';
 import { exec } from 'child_process';
 import { relative, dirname, basename, sep, join } from 'path';
 import chalk from 'chalk';
-import { existsSync, promises } from 'fs';
+import { promises } from 'fs';
 import { fileURLToPath } from 'url';
 
 const distDir = join(dirname(fileURLToPath(import.meta.url)), 'dist');
@@ -18,7 +18,7 @@ const success = bold.green;
 const boldBlue = bold.blue;
 const orange = bold.hex('#FFA500');
 
-const packageName = 'TinyRpc'; // Replace this with a export name for iife support. Should be a string.
+const packageName = 'PortableRpc'; // Replace this with a export name for iife support. Should be a string.
 
 const buildSizeLogs = [];
 

@@ -1,5 +1,5 @@
 {
-  "name": "tinyrpc",
+  "name": "portablerpc",
   "version": "1.0.0",
   "description": "A small json-based rpc for javascript.",
   "exports": {
