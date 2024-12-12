@@ -234,10 +234,10 @@ export { createConnection, BaseTransports };
 export type {
   Disposable,
   ValidJson,
-  Message as TinyRpcMessage,
-  RequestMessage as TinyRpcRequest,
-  ResponseMessage as TinyRpcResult,
-  ErrorMessage as TinyRpcError,
+  Message,
+  RequestMessage,
+  ResponseMessage,
+  ErrorMessage,
   Transports,
-  Connection as TinyRpcConnection,
+  Connection,
 };

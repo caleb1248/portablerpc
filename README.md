@@ -5,7 +5,12 @@ A small json-based rpc for javascript.
 # Example Usage
 
 ```typescript
-import { createConnection, BaseTransports, TinyRpcConnection } from 'tinyrpc';
+import {
+  createConnection,
+  BaseTransports,
+  Connection,
+  Message,
+} from 'portablerpc';
 
 class CustomTransports extends BaseTransports {
   constructor() {
@@ -16,14 +21,14 @@ class CustomTransports extends BaseTransports {
       this.onMessage(message);
     };
   }
-  sendMessage<T extends TinyRpcMessage>(message: T): void {
+  sendMessage<T extends Message>(message: T): void {
     console.log('Sending message:', message);
   }
 }
 
 // Create a connection using the custom transport
 const transports = new CustomTransports();
-const connection: TinyRpcConnection = createConnection(transports);
+const connection: Connection = createConnection(transports);
 
 // Example of sending a request
 connection.sendRequest('exampleMethod', { key: 'value' }).then((response) => {
