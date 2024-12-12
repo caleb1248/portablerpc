@@ -1,5 +1,5 @@
 import './style.css';
-import { createConnection, BaseTransports, TinyRpcMessage } from 'tinyrpc';
+import { createConnection, BaseTransports, TinyRpcMessage } from 'portablerpc';
 import TestWorker from './worker?worker';
 
 const worker = new TestWorker();
