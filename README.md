@@ -2,6 +2,11 @@
 
 A small json-based rpc for javascript.
 
+# Installation
+```
+npm i portablerpc
+```
+
 # Example Usage
 
 ```typescript
