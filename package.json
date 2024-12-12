@@ -1,5 +1,6 @@
 {
   "name": "portablerpc",
+  "private": false,
   "version": "1.0.0",
   "description": "A small json-based rpc for javascript.",
   "exports": {
@@ -9,12 +10,17 @@
       "require": "./dist/cjs/index.js"
     }
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "node build.mjs"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "chalk": "^5.3.0",
     "esbuild": "^0.24.0",
