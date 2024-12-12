@@ -1,5 +1,5 @@
 import './style.css';
-import { createConnection, BaseTransports, TinyRpcMessage } from 'portablerpc';
+import { createConnection, BaseTransports, Message } from 'portablerpc';
 import TestWorker from './worker?worker';
 
 const worker = new TestWorker();
@@ -12,7 +12,7 @@ class WorkerTransports extends BaseTransports {
       this.fireMessage(e.data);
     });
   }
-  sendMessage<T extends TinyRpcMessage>(message: T): void {
+  sendMessage<T extends Message>(message: T): void {
     this._worker.postMessage(message);
   }
 }

@@ -1,7 +1,7 @@
-import { createConnection, BaseTransports, TinyRpcMessage } from 'portablerpc';
+import { createConnection, BaseTransports, Message } from 'portablerpc';
 
 class SelfTransports extends BaseTransports {
-  sendMessage<T extends TinyRpcMessage>(message: T): void {
+  sendMessage<T extends Message>(message: T): void {
     self.postMessage(message);
   }
 
