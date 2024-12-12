@@ -1,4 +1,4 @@
-# Tinyrpc
+# PortableRpc
 
 A small json-based rpc for javascript.
 
