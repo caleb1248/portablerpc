@@ -1,7 +1,7 @@
 {
   "name": "portablerpc",
   "private": false,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A small json-based rpc for javascript.",
   "exports": {
     ".": {
