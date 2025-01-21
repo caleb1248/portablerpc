@@ -1,7 +1,7 @@
 {
   "name": "portablerpc",
   "private": false,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A small json-based rpc for javascript.",
   "exports": {
     ".": {
@@ -16,7 +16,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "node build.mjs"
+    "build": "node build.mjs",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
