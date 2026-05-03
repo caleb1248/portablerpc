@@ -1,8 +1,9 @@
-# PortableRpc
+# portablerpc
 
-A small json-based rpc for javascript.
+A tiny json-based rpc for javascript.
 
 # Installation
+
 ```
 npm i portablerpc
 ```
@@ -10,12 +11,7 @@ npm i portablerpc
 # Example Usage
 
 ```typescript
-import {
-  createConnection,
-  BaseTransports,
-  Connection,
-  Message,
-} from 'portablerpc';
+import { createConnection, BaseTransports, Connection, Message } from 'portablerpc';
 
 class CustomTransports extends BaseTransports {
   constructor() {
@@ -57,4 +53,4 @@ connection.onNotification('exampleNotification', (params) => {
 
 # Demo (for testing purposes)
 
-See https://github.com/caleb1248/tinyrpc/tree/main/demo
+See https://github.com/caleb1248/portablerpc/tree/main/demo

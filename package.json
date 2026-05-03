@@ -1,13 +1,21 @@
 {
   "name": "portablerpc",
   "private": false,
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "A small json-based rpc for javascript.",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./transports/postMessage": {
+      "types": "./dist/transports/postMessage.d.ts",
+      "import": "./dist/transports/postMessage.mjs",
+      "require": "./dist/transports/postMessage.cjs"
     }
   },
   "files": [
@@ -16,7 +24,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "node build.mjs",
+    "build": "tsdown",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -28,7 +36,9 @@
   "license": "MIT",
   "devDependencies": {
     "chalk": "^5.3.0",
-    "esbuild": "^0.24.0",
-    "typescript": "^5.7.2"
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "tsdown": "^0.21.10"
   }
 }

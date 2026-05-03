@@ -1,4 +1,3 @@
-import './style.css';
 import { createConnection, BaseTransports, Message } from 'portablerpc';
 import TestWorker from './worker?worker';
 
@@ -26,12 +25,8 @@ connection.onNotification('ready', async () => {
   const addContainer = document.getElementById('add')!;
   const num1Input = addContainer.querySelector('.num1') as HTMLInputElement;
   const num2Input = addContainer.querySelector('.num2') as HTMLInputElement;
-  const resultParagraph = addContainer.querySelector(
-    '.result'
-  ) as HTMLParagraphElement;
-  const errorParagraph = addContainer.querySelector(
-    '.error'
-  ) as HTMLParagraphElement;
+  const resultParagraph = addContainer.querySelector('.result') as HTMLParagraphElement;
+  const errorParagraph = addContainer.querySelector('.error') as HTMLParagraphElement;
   const calculateButton = addContainer.querySelector('button')!;
 
   calculateButton.addEventListener('click', async () => {

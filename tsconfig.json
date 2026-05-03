@@ -1,12 +1,16 @@
 {
   "compilerOptions": {
-    "lib": ["ES6"],
+    "lib": [
+      "ES6"
+    ],
     "declaration": true,
-    "declarationDir": "dist/types",
+    "rootDir": ".",
     "emitDeclarationOnly": true,
     "target": "es6",
     "moduleResolution": "bundler",
     "strictNullChecks": true
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

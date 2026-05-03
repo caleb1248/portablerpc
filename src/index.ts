@@ -36,6 +36,11 @@ interface RequestMessage extends Message {
   params: ValidJson;
 }
 
+interface NotificationMessage extends Message {
+  method: string;
+  params: ValidJson;
+}
+
 interface ResponseMessage extends Message {
   id: number;
   result: ValidJson;
@@ -54,16 +59,22 @@ function createRequestQueue(transports: Transports) {
   const listener = transports.onMessage((message) => {
     if (disposed || message.portablerpc !== 'v1' || !('id' in message)) return;
 
+    // Handle error messages
     if ('error' in message) {
       const { id, error } = message as ErrorMessage;
+      if (!queue.has(id)) return;
+
       const [, reject] = queue.get(id)!;
       reject(error);
       queue.delete(id);
       return;
     }
 
+    // Handle result messages
     if ('result' in message) {
       const { id, result } = message as ResponseMessage;
+      if (!queue.has(id)) return;
+
       const [resolve] = queue.get(id)!;
       resolve(result);
       queue.delete(id);
@@ -96,14 +107,19 @@ function createRequestQueue(transports: Transports) {
   };
 }
 
+function isRequestMessage(message: Message): message is RequestMessage {
+  return 'method' in message;
+}
+
 function createConnection(transports: Transports): Connection {
   const requestQueue = createRequestQueue(transports);
   const handlers = new Map<string, Function[]>();
   const disposables: Disposable[] = [];
 
+  // Handle requests
   disposables.push(
-    transports.onMessage((message: RequestMessage) => {
-      if (message.portablerpc !== 'v1' || !('method' in message)) return;
+    transports.onMessage((message: Message) => {
+      if (message.portablerpc !== 'v1' || !isRequestMessage(message)) return;
       const list = handlers.get(message.method);
       if (!list) return;
 
@@ -129,7 +145,7 @@ function createConnection(transports: Transports): Connection {
           }
         })();
       }
-    })
+    }),
   );
 
   return {
@@ -143,7 +159,7 @@ function createConnection(transports: Transports): Connection {
       }
       const list = handlers.get(method)!;
       list.push(handler);
-      return {
+      const disposable = {
         dispose() {
           const index = list.indexOf(handler);
           if (index !== -1) {
@@ -151,6 +167,9 @@ function createConnection(transports: Transports): Connection {
           }
         },
       };
+
+      disposables.push(disposable);
+      return disposable;
     },
 
     sendNotification(method, params) {
@@ -162,10 +181,20 @@ function createConnection(transports: Transports): Connection {
     },
 
     onNotification(method, handler) {
-      return transports.onMessage((message: RequestMessage) => {
-        if (message.portablerpc !== 'v1' || message.method !== method) return;
-        handler(message.params);
+      const disposable = transports.onMessage((message: Message) => {
+        if (
+          message.portablerpc !== 'v1' ||
+          (message as NotificationMessage).method !== method ||
+          (message as RequestMessage).id
+        ) {
+          return;
+        }
+
+        handler((message as NotificationMessage).params);
       });
+
+      disposables.push(disposable);
+      return disposable;
     },
 
     dispose() {
@@ -180,10 +209,10 @@ abstract class BaseTransports implements Transports {
   private _handlers: ((message: Message) => void)[] = [];
 
   /**
-   * Fires a message to all registered handlers. Messages are validated, but non-messages will result in console warns, so *please* validate the messages yourself.
+   * Fires a message to all registered handlers. Non-messages are ignored
    */
   protected fireMessage(message: Message) {
-    if (typeof message !== 'object' || message === null || message.portablerpc !== 'v1') return;
+    if (!message || message.portablerpc !== 'v1') return;
     for (let i = 0; i < this._handlers.length; i++) {
       this._handlers[i](message);
     }
@@ -193,7 +222,7 @@ abstract class BaseTransports implements Transports {
     this._handlers.push(handler);
 
     return {
-      dispose() {
+      dispose: () => {
         const index = this._handlers.indexOf(handler);
         if (index !== -1) {
           this._handlers.splice(index, 1);
