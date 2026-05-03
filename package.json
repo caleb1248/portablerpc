@@ -1,7 +1,7 @@
 {
   "name": "portablerpc",
   "private": false,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A small json-based rpc for javascript.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -36,9 +36,7 @@
   "license": "MIT",
   "devDependencies": {
     "chalk": "^5.3.0",
-    "typescript": "^6.0.3"
-  },
-  "dependencies": {
+    "typescript": "^6.0.3",
     "tsdown": "^0.21.10"
   }
 }
